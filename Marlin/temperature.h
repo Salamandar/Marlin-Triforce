@@ -65,10 +65,10 @@ class Temperature {
       static float redundant_temperature;
     #endif
 
-    static unsigned char soft_pwm_bed;
+    static uint8_t soft_pwm_bed;
 
     #if ENABLED(FAN_SOFT_PWM)
-      static unsigned char fanSpeedSoftPwm[FAN_COUNT];
+      static uint8_t fanSpeedSoftPwm[FAN_COUNT];
     #endif
 
     #if ENABLED(PIDTEMP) || ENABLED(PIDTEMPBED)
@@ -121,7 +121,7 @@ class Temperature {
       static millis_t watch_bed_next_ms;
     #endif
 
-    #if ENABLED(PREVENT_DANGEROUS_EXTRUDE)
+    #if ENABLED(PREVENT_COLD_EXTRUSION)
       static bool allow_cold_extrude;
       static float extrude_min_temp;
       static bool tooColdToExtrude(uint8_t e) {
@@ -157,9 +157,7 @@ class Temperature {
         static int lpq_ptr;
       #endif
 
-      static float pid_error[HOTENDS],
-                   temp_iState_min[HOTENDS],
-                   temp_iState_max[HOTENDS];
+      static float pid_error[HOTENDS];
       static bool pid_reset[HOTENDS];
     #endif
 
@@ -169,9 +167,7 @@ class Temperature {
                    pTerm_bed,
                    iTerm_bed,
                    dTerm_bed,
-                   pid_error_bed,
-                   temp_iState_min_bed,
-                   temp_iState_max_bed;
+                   pid_error_bed;
     #else
       static millis_t next_bed_check_ms;
     #endif
@@ -209,10 +205,10 @@ class Temperature {
       static millis_t next_auto_fan_check_ms;
     #endif
 
-    static unsigned char soft_pwm[HOTENDS];
+    static uint8_t soft_pwm[HOTENDS];
 
     #if ENABLED(FAN_SOFT_PWM)
-      static unsigned char soft_pwm_fan[FAN_COUNT];
+      static uint8_t soft_pwm_fan[FAN_COUNT];
     #endif
 
     #if ENABLED(FILAMENT_WIDTH_SENSOR)
@@ -376,15 +372,15 @@ class Temperature {
      */
     static void updatePID();
 
-    static void autotempShutdown() {
-      #if ENABLED(AUTOTEMP)
+    #if ENABLED(AUTOTEMP)
+      static void autotempShutdown() {
         if (planner.autotemp_enabled) {
           planner.autotemp_enabled = false;
           if (degTargetHotend(EXTRUDER_IDX) > planner.autotemp_min)
             setTargetHotend(0, EXTRUDER_IDX);
         }
-      #endif
-    }
+      }
+    #endif
 
     #if ENABLED(BABYSTEPPING)
 
@@ -437,8 +433,8 @@ class Temperature {
     #endif
 
     static void _temp_error(int e, const char* serial_msg, const char* lcd_msg);
-    static void min_temp_error(uint8_t e);
-    static void max_temp_error(uint8_t e);
+    static void min_temp_error(int8_t e);
+    static void max_temp_error(int8_t e);
 
     #if ENABLED(THERMAL_PROTECTION_HOTENDS) || HAS_THERMALLY_PROTECTED_BED
 

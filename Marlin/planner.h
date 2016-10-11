@@ -33,14 +33,12 @@
 #define PLANNER_H
 
 #include "types.h"
-#include "MarlinConfig.h"
+#include "enum.h"
+#include "Marlin.h"
 
-#if ENABLED(AUTO_BED_LEVELING_FEATURE)
+#if HAS_ABL
   #include "vector_3.h"
 #endif
-
-class Planner;
-extern Planner planner;
 
 /**
  * struct block_t
@@ -131,12 +129,11 @@ class Planner {
     static float acceleration;         // Normal acceleration mm/s^2  DEFAULT ACCELERATION for all printing moves. M204 SXXXX
     static float retract_acceleration; // Retract acceleration mm/s^2 filament pull-back and push-forward while standing still in the other axes M204 TXXXX
     static float travel_acceleration;  // Travel acceleration mm/s^2  DEFAULT ACCELERATION for all NON printing moves. M204 MXXXX
-    static float max_xy_jerk;          // The largest speed change requiring no acceleration
-    static float max_z_jerk;
-    static float max_e_jerk;
+    static float max_jerk[XYZE];       // The largest speed change requiring no acceleration
     static float min_travel_feedrate_mm_s;
 
-    #if ENABLED(AUTO_BED_LEVELING_FEATURE)
+    #if HAS_ABL
+      static bool abl_enabled;            // Flag that bed leveling is enabled
       static matrix_3x3 bed_level_matrix; // Transform to compensate for bed level
     #endif
 
@@ -201,46 +198,110 @@ class Planner {
 
     static bool is_full() { return (block_buffer_tail == BLOCK_MOD(block_buffer_head + 1)); }
 
-    #if ENABLED(AUTO_BED_LEVELING_FEATURE) || ENABLED(MESH_BED_LEVELING)
+    #if PLANNER_LEVELING
 
-      #if ENABLED(AUTO_BED_LEVELING_FEATURE)
-        /**
-         * The corrected position, applying the bed level matrix
-         */
-        static vector_3 adjusted_position();
-      #endif
+      #define ARG_X float lx
+      #define ARG_Y float ly
+      #define ARG_Z float lz
 
       /**
-       * Add a new linear movement to the buffer.
-       *
-       *  x,y,z,e   - target position in mm
-       *  fr_mm_s   - (target) speed of the move (mm/s)
-       *  extruder  - target extruder
+       * Apply leveling to transform a cartesian position
+       * as it will be given to the planner and steppers.
        */
-      static void buffer_line(float x, float y, float z, const float& e, float fr_mm_s, const uint8_t extruder);
-
-      /**
-       * Set the planner.position and individual stepper positions.
-       * Used by G92, G28, G29, and other procedures.
-       *
-       * Multiplies by axis_steps_per_mm[] and does necessary conversion
-       * for COREXY / COREXZ / COREYZ to set the corresponding stepper positions.
-       *
-       * Clears previous speed values.
-       */
-      static void set_position_mm(float x, float y, float z, const float& e);
+      static void apply_leveling(float &lx, float &ly, float &lz);
+      static void apply_leveling(float logical[XYZ]) { apply_leveling(logical[X_AXIS], logical[Y_AXIS], logical[Z_AXIS]); }
+      static void unapply_leveling(float logical[XYZ]);
 
     #else
 
-      static void buffer_line(const float& x, const float& y, const float& z, const float& e, float fr_mm_s, const uint8_t extruder);
-      static void set_position_mm(const float& x, const float& y, const float& z, const float& e);
+      #define ARG_X const float &lx
+      #define ARG_Y const float &ly
+      #define ARG_Z const float &lz
 
-    #endif // AUTO_BED_LEVELING_FEATURE || MESH_BED_LEVELING
+    #endif
 
     /**
-     * Set the E position (mm) of the planner (and the E stepper)
+     * Planner::_buffer_line
+     *
+     * Add a new direct linear movement to the buffer.
+     *
+     * Leveling and kinematics should be applied ahead of this.
+     *
+     *  a,b,c,e   - target position in mm or degrees
+     *  fr_mm_s   - (target) speed of the move (mm/s)
+     *  extruder  - target extruder
      */
-    static void set_e_position_mm(const float& e);
+    static void _buffer_line(const float &a, const float &b, const float &c, const float &e, float fr_mm_s, const uint8_t extruder);
+
+    static void _set_position_mm(const float &a, const float &b, const float &c, const float &e);
+
+    /**
+     * Add a new linear movement to the buffer.
+     * The target is NOT translated to delta/scara
+     *
+     * Leveling will be applied to input on cartesians.
+     * Kinematic machines should call buffer_line_kinematic (for leveled moves).
+     * (Cartesians may also call buffer_line_kinematic.)
+     *
+     *  lx,ly,lz,e   - target position in mm or degrees
+     *  fr_mm_s      - (target) speed of the move (mm/s)
+     *  extruder     - target extruder
+     */
+    static FORCE_INLINE void buffer_line(ARG_X, ARG_Y, ARG_Z, const float &e, float fr_mm_s, const uint8_t extruder) {
+      #if PLANNER_LEVELING && IS_CARTESIAN
+        apply_leveling(lx, ly, lz);
+      #endif
+      _buffer_line(lx, ly, lz, e, fr_mm_s, extruder);
+    }
+
+    /**
+     * Add a new linear movement to the buffer.
+     * The target is cartesian, it's translated to delta/scara if
+     * needed.
+     *
+     *  target   - x,y,z,e CARTESIAN target in mm
+     *  fr_mm_s  - (target) speed of the move (mm/s)
+     *  extruder - target extruder
+     */
+    static FORCE_INLINE void buffer_line_kinematic(const float target[XYZE], float fr_mm_s, const uint8_t extruder) {
+      #if PLANNER_LEVELING
+        float pos[XYZ] = { target[X_AXIS], target[Y_AXIS], target[Z_AXIS] };
+        apply_leveling(pos);
+      #else
+        const float * const pos = target;
+      #endif
+      #if IS_KINEMATIC
+        inverse_kinematics(pos);
+        _buffer_line(delta[A_AXIS], delta[B_AXIS], delta[C_AXIS], target[E_AXIS], fr_mm_s, extruder);
+      #else
+        _buffer_line(pos[X_AXIS], pos[Y_AXIS], pos[Z_AXIS], target[E_AXIS], fr_mm_s, extruder);
+      #endif
+    }
+
+    /**
+     * Set the planner.position and individual stepper positions.
+     * Used by G92, G28, G29, and other procedures.
+     *
+     * Multiplies by axis_steps_per_mm[] and does necessary conversion
+     * for COREXY / COREXZ / COREYZ to set the corresponding stepper positions.
+     *
+     * Clears previous speed values.
+     */
+    static FORCE_INLINE void set_position_mm(ARG_X, ARG_Y, ARG_Z, const float &e) {
+      #if PLANNER_LEVELING && IS_CARTESIAN
+        apply_leveling(lx, ly, lz);
+      #endif
+      _set_position_mm(lx, ly, lz, e);
+    }
+    static void set_position_mm_kinematic(const float position[NUM_AXIS]);
+    static void set_position_mm(const AxisEnum axis, const float& v);
+    static FORCE_INLINE void set_z_position_mm(const float& z) { set_position_mm(Z_AXIS, z); }
+    static FORCE_INLINE void set_e_position_mm(const float& e) { set_position_mm(E_AXIS, e); }
+
+    /**
+     * Sync from the stepper positions. (e.g., after an interrupted move)
+     */
+    static void sync_from_steppers();
 
     /**
      * Does the buffer have any blocks queued?
@@ -320,8 +381,8 @@ class Planner {
 
     static void calculate_trapezoid_for_block(block_t* block, float entry_factor, float exit_factor);
 
-    static void reverse_pass_kernel(block_t* previous, block_t* current, block_t* next);
-    static void forward_pass_kernel(block_t* previous, block_t* current, block_t* next);
+    static void reverse_pass_kernel(block_t* current, block_t* next);
+    static void forward_pass_kernel(block_t* previous, block_t* current);
 
     static void reverse_pass();
     static void forward_pass();
@@ -331,5 +392,7 @@ class Planner {
     static void recalculate();
 
 };
+
+extern Planner planner;
 
 #endif // PLANNER_H
