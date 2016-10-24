@@ -429,22 +429,22 @@
   // NOTE NB all values for DELTA_* values MUST be floating point, so always have a decimal point in them
 
   // Center-to-center distance of the holes in the diagonal push rods.
-  #define DELTA_DIAGONAL_ROD 255.0 // mm
+  #define DELTA_DIAGONAL_ROD 274.0 // mm
 
   // Horizontal offset from middle of printer to smooth rod center.
-  #define DELTA_SMOOTH_ROD_OFFSET 150.0 // mm
+  #define DELTA_SMOOTH_ROD_OFFSET 180.0 // mm
 
   // Horizontal offset of the universal joints on the end effector.
-  #define DELTA_EFFECTOR_OFFSET 20.0 // mm
+  #define DELTA_EFFECTOR_OFFSET 22.0 // mm
 
   // Horizontal offset of the universal joints on the carriages.
-  #define DELTA_CARRIAGE_OFFSET 27.5 // mm
+  #define DELTA_CARRIAGE_OFFSET 27.0 // mm
 
   // Horizontal distance bridged by diagonal push rods when effector is centered.
   #define DELTA_RADIUS (DELTA_SMOOTH_ROD_OFFSET-(DELTA_EFFECTOR_OFFSET)-(DELTA_CARRIAGE_OFFSET) + 1)
 
   // Print surface diameter/2 minus unreachable space (avoid collisions with vertical towers).
-  #define DELTA_PRINTABLE_RADIUS 140.0
+  #define DELTA_PRINTABLE_RADIUS 100.0
 
   // Delta calibration menu
   // uncomment to add three points calibration menu option.
@@ -916,7 +916,7 @@
 // For DELTA this is the top-center of the Cartesian print volume.
 //#define MANUAL_X_HOME_POS 0
 //#define MANUAL_Y_HOME_POS 0
-#define MANUAL_Z_HOME_POS 301.4 // Distance between the nozzle to printbed after homing
+#define MANUAL_Z_HOME_POS 350.2 // Distance between the nozzle to printbed after homing
 
 // Use "Z Safe Homing" to avoid homing with a Z probe outside the bed area.
 //
