@@ -114,7 +114,7 @@
  */
 #define SERIAL_PORT 0
 
-#define BAUDRATE 250000
+#define BAUDRATE 115200
 /**
  * This setting determines the communication speed of the printer.
  *
@@ -424,7 +424,7 @@
   // Make delta curves from many straight lines (linear interpolation).
   // This is a trade-off between visible corners (not enough segments)
   // and processor overload (too many expensive sqrt calls).
-  #define DELTA_SEGMENTS_PER_SECOND 200
+  #define DELTA_SEGMENTS_PER_SECOND 140
 
   // NOTE NB all values for DELTA_* values MUST be floating point, so always have a decimal point in them
 
@@ -515,7 +515,7 @@
  * Default Axis Steps Per Unit (steps/mm)
  * Override with M92
  */
-#define DEFAULT_AXIS_STEPS_PER_UNIT   { 100, 100, 100, 166 }
+#define DEFAULT_AXIS_STEPS_PER_UNIT   { 100, 100, 100, 147 }
 
 /**
  * Default Max Feed Rate (mm/s)
@@ -916,7 +916,7 @@
 // For DELTA this is the top-center of the Cartesian print volume.
 //#define MANUAL_X_HOME_POS 0
 //#define MANUAL_Y_HOME_POS 0
-#define MANUAL_Z_HOME_POS 350.2 // Distance between the nozzle to printbed after homing
+#define MANUAL_Z_HOME_POS 350.8 // Distance between the nozzle to printbed after homing
 
 // Use "Z Safe Homing" to avoid homing with a Z probe outside the bed area.
 //
