@@ -301,30 +301,15 @@
   #define K1 0.95 //smoothing factor within the PID
 
   // If you are using a pre-configured hotend then you can use one of the value sets by uncommenting it
-  // Ultimaker
-  #define  DEFAULT_Kp 22.2
-  #define  DEFAULT_Ki 1.08
-  #define  DEFAULT_Kd 114
+  // Default config
+  // #define  DEFAULT_Kp 22.2
+  // #define  DEFAULT_Ki 1.08
+  // #define  DEFAULT_Kd 114
 
-  // oXis Kossel k800 XL
-  //#define DEFAULT_Kp 22.04
-  //#define DEFAULT_Ki 1.65
-  //#define DEFAULT_Kd 73.67
-
-  // Kossel k800 XL
-  //#define DEFAULT_Kp 22.25
-  //#define DEFAULT_Ki 1.45
-  //#define DEFAULT_Kd 85.30
-
-  // MakerGear
-  //#define  DEFAULT_Kp 7.0
-  //#define  DEFAULT_Ki 0.1
-  //#define  DEFAULT_Kd 12
-
-  // Mendel Parts V9 on 12V
-  //#define  DEFAULT_Kp 63.0
-  //#define  DEFAULT_Ki 2.25
-  //#define  DEFAULT_Kd 440
+  // After PID Autotune
+  #define  DEFAULT_Kp 53.78
+  #define  DEFAULT_Ki 8.42
+  #define  DEFAULT_Kd 85.92
 
 #endif // PIDTEMP
 
@@ -340,7 +325,7 @@
 // If your configuration is significantly different than this and you don't understand the issues involved, you probably
 // shouldn't use bed PID until someone else verifies your hardware works.
 // If this is enabled, find your own PID constants below.
-//#define PIDTEMPBED
+#define PIDTEMPBED
 
 //#define BED_LIMIT_SWITCHING
 
