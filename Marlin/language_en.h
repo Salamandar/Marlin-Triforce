@@ -138,6 +138,12 @@
 #ifndef MSG_LEVEL_BED
   #define MSG_LEVEL_BED                       "Level bed"
 #endif
+#ifndef MSG_MOVING
+  #define MSG_MOVING                          "Moving..."
+#endif
+#ifndef MSG_FREE_XY
+  #define MSG_FREE_XY                         "Free XY"
+#endif
 #ifndef MSG_MOVE_X
   #define MSG_MOVE_X                          "Move X"
 #endif
@@ -257,6 +263,18 @@
 #endif
 #ifndef MSG_ESTEPS
   #define MSG_ESTEPS                          "Esteps/mm"
+#endif
+#ifndef MSG_E1STEPS
+  #define MSG_E1STEPS                         "E1steps/mm"
+#endif
+#ifndef MSG_E2STEPS
+  #define MSG_E2STEPS                         "E2steps/mm"
+#endif
+#ifndef MSG_E3STEPS
+  #define MSG_E3STEPS                         "E3steps/mm"
+#endif
+#ifndef MSG_E4STEPS
+  #define MSG_E4STEPS                         "E4steps/mm"
 #endif
 #ifndef MSG_TEMPERATURE
   #define MSG_TEMPERATURE                     "Temperature"
@@ -487,8 +505,14 @@
 #ifndef MSG_INFO_PROTOCOL
   #define MSG_INFO_PROTOCOL                   "Protocol"
 #endif
+#ifndef MSG_LIGHTS_ON
+  #define MSG_LIGHTS_ON                       "Case light on"
+#endif
+#ifndef MSG_LIGHTS_OFF
+  #define MSG_LIGHTS_OFF                      "Case light off"
+#endif
 
-#if LCD_WIDTH > 19
+#if LCD_WIDTH >= 20
   #ifndef MSG_INFO_PRINT_COUNT
     #define MSG_INFO_PRINT_COUNT              "Print Count"
   #endif
@@ -553,60 +577,37 @@
 #ifndef MSG_FILAMENT_CHANGE_OPTION_RESUME
   #define MSG_FILAMENT_CHANGE_OPTION_RESUME   "Resume print"
 #endif
+
+//
+// Filament Change screens show up to 3 lines on a 4-line display
+//                        ...or up to 2 lines on a 3-line display
+//
 #if LCD_HEIGHT >= 4
   #ifndef MSG_FILAMENT_CHANGE_INIT_1
     #define MSG_FILAMENT_CHANGE_INIT_1          "Wait for start"
-  #endif
-  #ifndef MSG_FILAMENT_CHANGE_INIT_2
     #define MSG_FILAMENT_CHANGE_INIT_2          "of the filament"
-  #endif
-  #ifndef MSG_FILAMENT_CHANGE_INIT_3
     #define MSG_FILAMENT_CHANGE_INIT_3          "change"
   #endif
   #ifndef MSG_FILAMENT_CHANGE_UNLOAD_1
     #define MSG_FILAMENT_CHANGE_UNLOAD_1        "Wait for"
-  #endif
-  #ifndef MSG_FILAMENT_CHANGE_UNLOAD_2
     #define MSG_FILAMENT_CHANGE_UNLOAD_2        "filament unload"
-  #endif
-  #ifndef MSG_FILAMENT_CHANGE_UNLOAD_3
-    #define MSG_FILAMENT_CHANGE_UNLOAD_3        ""
   #endif
   #ifndef MSG_FILAMENT_CHANGE_INSERT_1
     #define MSG_FILAMENT_CHANGE_INSERT_1        "Insert filament"
-  #endif
-  #ifndef MSG_FILAMENT_CHANGE_INSERT_2
     #define MSG_FILAMENT_CHANGE_INSERT_2        "and press button"
-  #endif
-  #ifndef MSG_FILAMENT_CHANGE_INSERT_3
     #define MSG_FILAMENT_CHANGE_INSERT_3        "to continue..."
   #endif
   #ifndef MSG_FILAMENT_CHANGE_LOAD_1
     #define MSG_FILAMENT_CHANGE_LOAD_1          "Wait for"
-  #endif
-  #ifndef MSG_FILAMENT_CHANGE_LOAD_2
     #define MSG_FILAMENT_CHANGE_LOAD_2          "filament load"
-  #endif
-  #ifndef MSG_FILAMENT_CHANGE_LOAD_3
-    #define MSG_FILAMENT_CHANGE_LOAD_3          ""
   #endif
   #ifndef MSG_FILAMENT_CHANGE_EXTRUDE_1
     #define MSG_FILAMENT_CHANGE_EXTRUDE_1       "Wait for"
-  #endif
-  #ifndef MSG_FILAMENT_CHANGE_EXTRUDE_2
     #define MSG_FILAMENT_CHANGE_EXTRUDE_2       "filament extrude"
-  #endif
-  #ifndef MSG_FILAMENT_CHANGE_EXTRUDE_3
-    #define MSG_FILAMENT_CHANGE_EXTRUDE_3       ""
   #endif
   #ifndef MSG_FILAMENT_CHANGE_RESUME_1
     #define MSG_FILAMENT_CHANGE_RESUME_1        "Wait for print"
-  #endif
-  #ifndef MSG_FILAMENT_CHANGE_RESUME_2
     #define MSG_FILAMENT_CHANGE_RESUME_2        "to resume"
-  #endif
-  #ifndef MSG_FILAMENT_CHANGE_RESUME_3
-    #define MSG_FILAMENT_CHANGE_RESUME_3        ""
   #endif
 #else // LCD_HEIGHT < 4
   #ifndef MSG_FILAMENT_CHANGE_INIT_1
